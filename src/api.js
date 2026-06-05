@@ -37,7 +37,7 @@ export async function analyzeWithGroq(question, code, language, results) {
     const res = await fetch(`${API_URL}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, code, language, results }),
+      body: JSON.stringify({ question, code, language, testResults: results }),
     });
 
     if (!res.ok) {

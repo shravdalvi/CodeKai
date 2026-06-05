@@ -424,15 +424,13 @@ export default function App() {
       setCompletedQuestions(prev => Array.from(new Set([...prev, activeQuestion.id])));
     }
 
-    // Run AI analysis on Submit regardless of if all tests passed
-    if (isSubmit) {
-      setRunOutput('🤖 Analysing with AI…');
-      setIsAnalyzing(true);
-      const ai = await analyzeWithGroq(activeQuestion, code, language, results);
-      setAiAnalysis(ai);
-      setIsAnalyzing(false);
-      setRunOutput('');
-    }
+    // Run AI analysis on both Run and Submit
+    setRunOutput('🤖 Analysing with AI…');
+    setIsAnalyzing(true);
+    const ai = await analyzeWithGroq(activeQuestion, code, language, results);
+    setAiAnalysis(ai);
+    setIsAnalyzing(false);
+    setRunOutput('');
 
     if (isSubmit) setIsSubmitting(false); else setIsRunning(false);
   };
