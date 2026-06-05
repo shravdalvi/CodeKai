@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Terminal, Code2, Play, CheckCircle2, ChevronRight, ChevronDown,
-  PlayCircle, PauseCircle, RotateCcw, Monitor, XCircle, Zap
+  PlayCircle, PauseCircle, RotateCcw, Monitor, XCircle, Zap, LogOut
 } from 'lucide-react';
 import { dummyPatterns } from './data';
+import Editor from '@monaco-editor/react';
+import Auth from './Auth';
 import './App.css';
 
 // ── Piston API (no "runtime" field — causes 401) ──────────────────────────────
@@ -13,6 +15,17 @@ const LANGUAGE_MAP = {
   java:       { language: 'java',        version: '15.0.2'  },
   cpp:        { language: 'c++',         version: '10.2.0'  },
 };
+
+const ANIME_AVATARS = [
+  { id: 'gojo', name: 'Satoru Gojo', url: '/avatars/gojo.png' },
+  { id: 'goku', name: 'Son Goku', url: '/avatars/goku.png' },
+  { id: 'jinwoo', name: 'Jinwoo', url: '/avatars/jinwoo.png' },
+  { id: 'l', name: 'L', url: '/avatars/l.png' },
+  { id: 'light', name: 'Yagami Light', url: '/avatars/light.png' },
+  { id: 'maki', name: 'Maki', url: '/avatars/maki.png' },
+  { id: 'choso', name: 'Choso', url: '/avatars/choso.png' },
+  { id: 'yuta', name: 'Yuta', url: '/avatars/yuta.png' }
+];
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -261,6 +274,33 @@ export default function App() {
   const [bottomTab, setBottomTab]           = useState('testcase');
   const [isAnalyzing, setIsAnalyzing]       = useState(false);
 
+  // Profile State
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+    
+    if (showProfileMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showProfileMenu]);
+
+  const [userProfile, setUserProfile] = useState({
+    name: 'Shravan',
+    username: 'shravcoder',
+    email: 'shrav@example.com',
+    avatar: ANIME_AVATARS[0].url
+  });
+
   // Panel sizes
   const [leftWidth, setLeftWidth]       = useState(42); // % of workspace
   const [bottomHeight, setBottomHeight] = useState(260); // px
@@ -422,8 +462,8 @@ export default function App() {
       setCompletedQuestions(prev => Array.from(new Set([...prev, activeQuestion.id])));
     }
 
-    // Run AI analysis if all passed
-    if (allPassed) {
+    // Run AI analysis on Submit regardless of if all tests passed
+    if (isSubmit) {
       setRunOutput('🤖 Analysing with AI…');
       setIsAnalyzing(true);
       const ai = await analyzeWithGroq(activeQuestion, code, language, results);
@@ -439,39 +479,21 @@ export default function App() {
   const handleSubmit = () => executeCode(true);
 
   // ── Editor Auto-Indentation ──
-  const handleEditorKeyDown = (e) => {
-    const el = e.target;
-    const start = el.selectionStart;
-    const end = el.selectionEnd;
-    const code = getCode();
 
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      setCode(code.substring(0, start) + '    ' + code.substring(end));
-      setTimeout(() => { el.selectionStart = el.selectionEnd = start + 4; }, 0);
-    } 
-    else if (e.key === 'Enter') {
-      e.preventDefault();
-      // Find where the current line starts
-      let lineStart = start - 1;
-      while (lineStart >= 0 && code[lineStart] !== '\n') lineStart--;
-      lineStart++;
-
-      const currentLine = code.substring(lineStart, start);
-      const match = currentLine.match(/^\s*/);
-      let indent = match ? match[0] : '';
-
-      // Auto-increase indent for python colon or js curly brace
-      if (currentLine.trim().endsWith(':') || currentLine.trim().endsWith('{')) {
-        indent += '    ';
-      }
-
-      setCode(code.substring(0, start) + '\n' + indent + code.substring(end));
-      setTimeout(() => { el.selectionStart = el.selectionEnd = start + 1 + indent.length; }, 0);
-    }
-  };
 
   // ── Render ────────────────────────────────────────────────────────────────────
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setShowProfileMenu(false);
+  };
+
+  if (!isLoggedIn) {
+    return <Auth onLogin={(user) => {
+      setUserProfile(user);
+      setIsLoggedIn(true);
+    }} />;
+  }
+
   const currentTestCase = activeQuestion?.testCases?.[activeCase];
   const inputFields     = currentTestCase ? parseInputFields(currentTestCase.input) : [];
 
@@ -482,6 +504,64 @@ export default function App() {
         <div className="brand">
           <Terminal className="brand-icon" size={26} />
           <span>DSAMaster</span>
+        </div>
+        
+        <div className="navbar-right">
+          <div className="profile-wrapper" ref={profileRef}>
+            <img 
+              src={userProfile.avatar} 
+              alt="Profile" 
+              className="nav-avatar" 
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=P&background=random&color=fff`; }}
+            />
+            
+            {showProfileMenu && (
+              <div className="profile-dropdown">
+                <div className="profile-header">
+                  <img src={userProfile.avatar} alt="Profile" className="profile-header-avatar" onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=P&background=random&color=fff`; }} />
+                  <div className="profile-info">
+                    <div className="profile-name">{userProfile.name}</div>
+                    <div className="profile-username">@{userProfile.username}</div>
+                    <div className="profile-email">{userProfile.email}</div>
+                  </div>
+                </div>
+                
+                <div className="avatar-selection">
+                  <div className="avatar-title">Choose Avatar</div>
+                  <div className="avatar-grid">
+                    {ANIME_AVATARS.map(avatar => (
+                      <img
+                        key={avatar.id}
+                        src={avatar.url}
+                        alt={avatar.name}
+                        title={avatar.name}
+                        className={`avatar-option ${userProfile.avatar === avatar.url ? 'selected' : ''}`}
+                        onClick={() => {
+                          setUserProfile({...userProfile, avatar: avatar.url});
+                          
+                          // Update localStorage with new avatar
+                          const users = JSON.parse(localStorage.getItem('dsa-users') || '[]');
+                          const userIndex = users.findIndex(u => u.username === userProfile.username);
+                          if (userIndex !== -1) {
+                            users[userIndex].avatar = avatar.url;
+                            localStorage.setItem('dsa-users', JSON.stringify(users));
+                          }
+                        }}
+                        onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatar.name)}&background=random&color=fff&bold=true`; }}
+                      />
+                    ))}
+                  </div>
+                  
+                  <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+                    <button className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={handleLogout}>
+                      <LogOut size={16} /> Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
@@ -606,13 +686,24 @@ export default function App() {
               </div>
 
               {/* Code Area */}
-              <textarea className="code-area"
-                value={getCode()}
-                onChange={e => setCode(e.target.value)}
-                onKeyDown={handleEditorKeyDown}
-                spellCheck="false"
-                placeholder={`// Write your ${language} solution here…`}
-              />
+              <div className="code-area-wrapper">
+                <Editor
+                  height="100%"
+                  language={language}
+                  theme="vs-dark"
+                  value={getCode()}
+                  onChange={val => setCode(val || '')}
+                  options={{
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    renderIndentGuides: true,
+                    fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
+                    scrollBeyondLastLine: false,
+                    wordWrap: "on",
+                    padding: { top: 16 }
+                  }}
+                />
+              </div>
 
               {/* ── Vertical Resize Handle ── */}
               <div className="resizer resizer-v" onMouseDown={startDragV} />
@@ -793,9 +884,26 @@ export default function App() {
                           </div>
                         </div>
                         <div className="ai-details">
-                          <div className="ai-detail ai-good">✅ {aiAnalysis.strength}</div>
-                          <div className="ai-detail ai-bad">💡 {aiAnalysis.improvement}</div>
-                          <div className="ai-detail ai-info">⏱ {aiAnalysis.complexity}</div>
+                          <div className="ai-detail ai-good" style={{display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+                            <strong>✅ What is Right</strong>
+                            <span>{aiAnalysis.whatIsRight || aiAnalysis.strength}</span>
+                          </div>
+                          {aiAnalysis.whatIsWrong && (
+                            <div className="ai-detail ai-bad" style={{display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+                              <strong>❌ What is Wrong</strong>
+                              <span>{aiAnalysis.whatIsWrong || aiAnalysis.improvement}</span>
+                            </div>
+                          )}
+                          {aiAnalysis.howToSolve && (
+                            <div className="ai-detail ai-info" style={{display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+                              <strong>💡 How to Solve</strong>
+                              <span>{aiAnalysis.howToSolve}</span>
+                            </div>
+                          )}
+                          <div className="ai-detail" style={{background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)', display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                            <strong>⏱ Complexity:</strong>
+                            <span>{aiAnalysis.complexity}</span>
+                          </div>
                         </div>
                       </div>
                     ) : (

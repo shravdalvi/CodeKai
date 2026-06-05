@@ -96,8 +96,9 @@ Respond ONLY with valid JSON (no markdown), exactly this shape:
 {
   "accuracy": 85,
   "summary": "One sentence about the solution quality.",
-  "strength": "What the code does right.",
-  "improvement": "What to fix or improve.",
+  "whatIsRight": "What the code does correctly.",
+  "whatIsWrong": "What the code does incorrectly, or where it fails.",
+  "howToSolve": "Specific suggestions on how to fix the wrong parts.",
   "complexity": "Time & Space complexity.",
   "codeQuality": [
     {
@@ -114,7 +115,7 @@ Respond ONLY with valid JSON (no markdown), exactly this shape:
       messages: [{ role: 'user', content: prompt }],
       model: 'llama-3.3-70b-versatile',
       temperature: 0.2,
-      max_tokens: 300,
+      max_tokens: 500,
     });
 
     const raw = chatCompletion.choices[0]?.message?.content || '';

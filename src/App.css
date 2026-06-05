@@ -56,6 +56,130 @@
   filter: drop-shadow(0 0 8px var(--accent-glow));
 }
 
+/* ── Navbar Profile ────────────────────────────────────────── */
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.profile-wrapper {
+  position: relative;
+}
+
+.nav-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.nav-avatar:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 280px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  z-index: 100;
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(255,255,255,0.02);
+}
+
+.profile-header-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-color);
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1rem;
+  margin-bottom: 0.1rem;
+}
+
+.profile-username {
+  color: var(--accent-color);
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+}
+
+.profile-email {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.avatar-selection {
+  padding: 1.2rem;
+}
+
+.avatar-title {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+}
+
+.avatar-option {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  opacity: 0.7;
+}
+
+.avatar-option:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.avatar-option.selected {
+  opacity: 1;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
 .main-content {
   display: flex;
   flex: 1;
@@ -535,20 +659,11 @@
   box-shadow: 0 0 15px var(--accent-glow);
 }
 
-/* ── Code area ─────────────────────────────────────────── */
-.code-area {
+.code-area-wrapper {
   flex: 1;
   width: 100%;
   min-height: 0;
-  background: var(--bg-main);
-  color: #d4d4d4;
-  font-family: var(--font-mono);
-  font-size: 14px;
-  padding: 1rem;
-  border: none;
-  resize: none;
-  outline: none;
-  line-height: 1.6;
+  background: #1e1e1e; /* matches Monaco vs-dark theme */
 }
 
 /* ── Example blocks (problem panel) ────────────────────── */
@@ -847,3 +962,168 @@
 }
 
 @keyframes spin { 100% { transform: rotate(360deg); } } .spin-animation { animation: spin 1s linear infinite; }
+
+/* ── Auth Dark Card Redesign ────────────────────────────────────────────── */
+.auth-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  padding: 2rem;
+  font-family: var(--font-sans);
+}
+
+.auth-card {
+  background: var(--bg-panel);
+  width: 100%;
+  max-width: 440px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  padding: 3rem 2.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-logo-container {
+  background: var(--accent-color);
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 16px var(--accent-glow);
+}
+
+.auth-title {
+  font-family: 'Georgia', serif;
+  font-size: 2.2rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.auth-subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+}
+
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.input-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 1rem;
+  color: var(--text-primary);
+  background: var(--bg-main);
+  transition: all 0.2s;
+}
+
+.input-group input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.forgot-password {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.forgot-password span {
+  color: var(--accent-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.forgot-password span:hover {
+  opacity: 0.8;
+}
+
+.btn-primary-auth {
+  width: 100%;
+  padding: 1rem;
+  background: var(--accent-color);
+  color: var(--bg-main);
+  border: none;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.btn-primary-auth:hover {
+  background: var(--button-hover);
+  transform: translateY(-1px);
+}
+
+.auth-footer {
+  margin-top: 2.5rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.auth-footer span {
+  color: var(--accent-color);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-footer span:hover {
+  text-decoration: underline;
+}
+
+.auth-error {
+  background: rgba(255, 51, 102, 0.1);
+  border: 1px solid var(--error-color);
+  color: var(--error-color);
+  padding: 0.8rem;
+  border-radius: 8px;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
