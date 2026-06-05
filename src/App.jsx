@@ -6,6 +6,7 @@ import {
 import { dummyPatterns } from './data';
 import Editor from '@monaco-editor/react';
 import Auth from './Auth';
+import { runCode, analyzeWithGroq } from './api';
 import './App.css';
 
 // ── Piston API (no "runtime" field — causes 401) ──────────────────────────────
@@ -222,48 +223,8 @@ function getFilename(lang) {
   return { javascript:'solution.js', python:'solution.py', java:'Solution.java', cpp:'solution.cpp' }[lang] ?? 'solution.txt';
 }
 
-// ── Backend Execution Engine ───────────────────────────────────────────────────
-async function runCode(lang, filename, code) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 15000);
-
-  try {
-    const res = await fetch('http://localhost:5000/api/execute', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lang, code }),
-      signal: ctrl.signal,
-    });
-    clearTimeout(t);
-
-    if (!res.ok) throw new Error(`Backend HTTP ${res.status}`);
-    return await res.json();
-  } catch (e) {
-    clearTimeout(t);
-    throw e;
-  }
-}
-
-// ── Backend AI Analysis ────────────────────────────────────────────────────────
-async function analyzeWithGroq(question, code, language, testResults) {
-  try {
-    const res = await fetch('http://localhost:5000/api/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, code, language, testResults }),
-    });
-
-    if (!res.ok) {
-      console.error('Failed to get AI analysis:', await res.text());
-      return null;
-    }
-    
-    return await res.json();
-  } catch (e) {
-    console.error('AI Analysis Error:', e.message);
-    return null;
-  }
-}
+// ── runCode & analyzeWithGroq imported from ./api.js ─────────────────────────
+// All backend calls use VITE_API_URL (set in .env or Render env vars)
 
 // ── Component ──────────────────────────────────────────────────────────────────
 export default function App() {
