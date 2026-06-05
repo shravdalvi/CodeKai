@@ -8,6 +8,17 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
+const ANIME_AVATARS = [
+  { id: 'gojo', name: 'Satoru Gojo', url: '/avatars/gojo.png' },
+  { id: 'goku', name: 'Son Goku', url: '/avatars/goku.png' },
+  { id: 'jinwoo', name: 'Jinwoo', url: '/avatars/jinwoo.png' },
+  { id: 'l', name: 'L', url: '/avatars/l.png' },
+  { id: 'light', name: 'Yagami Light', url: '/avatars/light.png' },
+  { id: 'maki', name: 'Maki', url: '/avatars/maki.png' },
+  { id: 'choso', name: 'Choso', url: '/avatars/choso.png' },
+  { id: 'yuta', name: 'Yuta', url: '/avatars/yuta.png' }
+];
+
 export default function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
@@ -17,6 +28,12 @@ export default function Auth({ onLogin }) {
     confirmPassword: ''
   });
   const [error, setError] = useState('');
+
+  // Onboarding state for Google Auth
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [googleUser, setGoogleUser] = useState(null);
+  const [selectedAvatar, setSelectedAvatar] = useState(ANIME_AVATARS[0].url);
+  const [onboardingUsername, setOnboardingUsername] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -80,10 +97,19 @@ export default function Auth({ onLogin }) {
 
       const user = userCredential.user;
       
-      // Save or update user in Firestore
-      const authUser = await saveUserToFirestore(user, formData.username);
+      const authUser = {
+        uid: user.uid,
+        name: user.displayName || formData.username || 'New User',
+        username: (user.displayName || formData.username || user.email.split('@')[0]).replace(/\s+/g, '').toLowerCase(),
+        email: user.email,
+        avatar: user.photoURL || '/avatars/gojo.png',
+      };
       
+      // Instantly log in to open the dashboard!
       onLogin(authUser);
+
+      // Save or update user in Firestore in the background
+      saveUserToFirestore(user, formData.username).catch(err => console.error('Firestore sync error:', err));
 
     } catch (err) {
       console.error(err);
@@ -91,8 +117,96 @@ export default function Auth({ onLogin }) {
     }
   };
 
+  const handleOnboardingSubmit = async (e) => {
+    e.preventDefault();
+    if (!onboardingUsername.trim()) {
+      setError('Please enter a username');
+      return;
+    }
+    
+    const authUser = {
+      uid: googleUser.uid,
+      name: googleUser.displayName || 'Google User',
+      username: onboardingUsername.replace(/\s+/g, '').toLowerCase(),
+      email: googleUser.email,
+      avatar: selectedAvatar,
+      createdAt: new Date().toISOString(),
+      lastLogin: new Date().toISOString()
+    };
+    
+    // Save to Firestore and log in instantly
+    const userRef = doc(db, 'users', googleUser.uid);
+    setDoc(userRef, authUser).catch(err => console.error(err));
+    
+    onLogin(authUser);
+  };
+
+  // (onboarding rendered inline below)
+
   return (
     <div className="auth-wrapper">
+      {showOnboarding && (
+        <div className="onboarding-overlay">
+          <div className="onboarding-modal">
+            <div className="onboarding-header">
+              <div className="onboarding-icon">
+                <User size={22} color="var(--bg-main)" />
+              </div>
+              <div>
+                <h3 className="onboarding-title">Almost there!</h3>
+                <p className="onboarding-subtitle">Set up your profile to get started</p>
+              </div>
+            </div>
+
+            {error && <div className="auth-error" style={{ marginBottom: '1rem' }}>{error}</div>}
+
+            <form onSubmit={handleOnboardingSubmit}>
+              <div className="input-group" style={{ marginBottom: '1.2rem' }}>
+                <label>Choose a Username</label>
+                <input
+                  type="text"
+                  value={onboardingUsername}
+                  onChange={e => { setOnboardingUsername(e.target.value); setError(''); }}
+                  placeholder="e.g. ninja_coder"
+                  autoFocus
+                />
+              </div>
+
+              <div style={{ marginBottom: '1.2rem' }}>
+                <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: '0.8rem' }}>
+                  Select Your Avatar
+                </label>
+                <div className="avatar-grid">
+                  {ANIME_AVATARS.map(avatar => (
+                    <img
+                      key={avatar.id}
+                      src={avatar.url}
+                      alt={avatar.name}
+                      title={avatar.name}
+                      className={`avatar-option ${selectedAvatar === avatar.url ? 'selected' : ''}`}
+                      onClick={() => setSelectedAvatar(avatar.url)}
+                      style={{
+                        cursor: 'pointer',
+                        border: selectedAvatar === avatar.url
+                          ? '3px solid var(--accent-color)'
+                          : '3px solid transparent',
+                        boxShadow: selectedAvatar === avatar.url
+                          ? '0 0 12px var(--accent-glow)'
+                          : 'none',
+                        transition: 'all 0.2s'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <button type="submit" className="btn-primary-auth" style={{ marginTop: 0 }}>
+                Done &nbsp;<ArrowRight size={16} />
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
       <div className="auth-card">
         
         <div className="auth-logo-container">
@@ -195,10 +309,24 @@ export default function Auth({ onLogin }) {
                 const result = await signInWithPopup(auth, googleProvider);
                 const user = result.user;
                 
-                // Save or update user in Firestore
-                const authUser = await saveUserToFirestore(user, user.displayName);
+                const userRef = doc(db, 'users', user.uid);
+                const userSnap = await getDoc(userRef);
                 
-                onLogin(authUser);
+                if (userSnap.exists()) {
+                   // Returning user, log in instantly
+                   const existingData = userSnap.data();
+                   const authUser = { ...existingData, lastLogin: new Date().toISOString() };
+                   
+                   // Update last login in background
+                   setDoc(userRef, { lastLogin: authUser.lastLogin }, { merge: true }).catch(err => console.error(err));
+                   onLogin(authUser);
+                } else {
+                   // First time user, trigger onboarding!
+                   setGoogleUser(user);
+                   setOnboardingUsername((user.displayName || user.email.split('@')[0]).replace(/\s+/g, '').toLowerCase());
+                   // Keep the default first anime avatar from our state initialization
+                   setShowOnboarding(true);
+                }
               } catch (error) {
                 console.error(error);
                 setError(error.message.replace('Firebase: ', ''));

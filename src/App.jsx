@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Terminal, Code2, Play, CheckCircle2, ChevronRight, ChevronDown,
-  PlayCircle, PauseCircle, RotateCcw, Monitor, XCircle, Zap, LogOut
+  PlayCircle, PauseCircle, RotateCcw, Monitor, XCircle, Zap, LogOut, List, Trophy
 } from 'lucide-react';
 import { dummyPatterns } from './data';
 import Editor from '@monaco-editor/react';
@@ -273,6 +273,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen]       = useState(true);
   const [bottomTab, setBottomTab]           = useState('testcase');
   const [isAnalyzing, setIsAnalyzing]       = useState(false);
+  const [showSubmissions, setShowSubmissions] = useState(false);
 
   // Profile State
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -507,6 +508,19 @@ export default function App() {
         </div>
         
         <div className="navbar-right">
+          {/* Submissions Button */}
+          <button
+            className="submissions-nav-btn"
+            onClick={() => setShowSubmissions(true)}
+            title="My Submissions"
+          >
+            <Trophy size={16} />
+            <span>Submissions</span>
+            {completedQuestions.length > 0 && (
+              <span className="submissions-count">{completedQuestions.length}</span>
+            )}
+          </button>
+
           <div className="profile-wrapper" ref={profileRef}>
             <img 
               src={userProfile.avatar} 
@@ -565,6 +579,61 @@ export default function App() {
         </div>
       </nav>
 
+      {/* Submissions Modal */}
+      {showSubmissions && (
+        <div className="onboarding-overlay" onClick={() => setShowSubmissions(false)}>
+          <div className="submissions-modal" onClick={e => e.stopPropagation()}>
+            <div className="submissions-modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <Trophy size={20} color="var(--accent-color)" />
+                <h2 style={{ margin: 0, fontSize: '1.3rem', color: 'var(--text-primary)' }}>My Submissions</h2>
+              </div>
+              <button className="sidebar-close-btn" onClick={() => setShowSubmissions(false)}>✕</button>
+            </div>
+            <div className="submissions-stats">
+              <div className="stat-pill">
+                <span className="stat-num">{completedQuestions.length}</span>
+                <span className="stat-label">Solved</span>
+              </div>
+              <div className="stat-pill">
+                <span className="stat-num">{dummyPatterns.flatMap(p => p.questions).length}</span>
+                <span className="stat-label">Total</span>
+              </div>
+              <div className="stat-pill">
+                <span className="stat-num">
+                  {dummyPatterns.flatMap(p => p.questions).length > 0
+                    ? Math.round((completedQuestions.length / dummyPatterns.flatMap(p => p.questions).length) * 100)
+                    : 0}%
+                </span>
+                <span className="stat-label">Progress</span>
+              </div>
+            </div>
+            <div className="submissions-list">
+              {dummyPatterns.map(pattern => (
+                <div key={pattern.id} className="sub-pattern-group">
+                  <div className="sub-pattern-title">{pattern.name}</div>
+                  {pattern.questions.map(q => (
+                    <div
+                      key={q.id}
+                      className={`sub-question-row ${completedQuestions.includes(q.id) ? 'sub-solved' : ''}`}
+                      onClick={() => { handleQuestionSelect(q); setShowSubmissions(false); }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        {completedQuestions.includes(q.id)
+                          ? <CheckCircle2 size={16} color="var(--accent-color)" />
+                          : <div className="sub-empty-circle" />}
+                        <span>{q.title}</span>
+                      </div>
+                      <span className={`difficulty-badge difficulty-${q.difficulty}`}>{q.difficulty}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="main-content">
         {/* Sidebar */}
         <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
@@ -599,6 +668,27 @@ export default function App() {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Sidebar Footer Buttons */}
+          <div className="sidebar-footer">
+            <button
+              className="sidebar-footer-btn submissions-btn"
+              onClick={() => setShowSubmissions(true)}
+            >
+              <List size={15} /> Submissions ({completedQuestions.length})
+            </button>
+            <button
+              className="sidebar-footer-btn reset-btn"
+              onClick={() => {
+                if (window.confirm('Reset all progress? This cannot be undone.')) {
+                  setCompletedQuestions([]);
+                  localStorage.removeItem('dsa-completed');
+                }
+              }}
+            >
+              <RotateCcw size={14} /> Reset Progress
+            </button>
           </div>
         </aside>
 
