@@ -2,12 +2,10 @@
 // All backend requests go through this base URL.
 // Set VITE_API_URL in your .env file for local dev or in Render's env vars for production.
 
-let envUrl = import.meta.env.VITE_API_URL;
-// Prevent accidental misconfiguration where frontend URL is used for backend
-if (envUrl === '/' || (envUrl && envUrl.includes('vercel.app'))) {
-  envUrl = null;
-}
-const API_URL = envUrl || (import.meta.env.PROD ? 'https://dsa-web-1fgp.onrender.com' : 'http://localhost:5000');
+const RENDER_URL = 'https://dsa-web-1fgp.onrender.com';
+const LOCAL_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Force the use of the Render backend in production to bypass any Vercel env var misconfigurations
+const API_URL = import.meta.env.PROD ? RENDER_URL : LOCAL_URL;
 /**
  * Execute code against the backend Piston runner.
  * @param {string} language
