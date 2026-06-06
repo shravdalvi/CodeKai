@@ -122,7 +122,8 @@
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   z-index: 100;
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: 80vh;
   animation: slideDown 0.2s ease-out;
 }
 
@@ -137,7 +138,7 @@
   gap: 1rem;
   padding: 1.2rem;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(255,255,255,0.02);
+  background: rgba(var(--overlay-rgb),0.02);
 }
 
 .profile-header-avatar {
@@ -194,6 +195,7 @@
   aspect-ratio: 1;
   border-radius: 50%;
   object-fit: cover;
+  object-position: top center;
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.2s;
@@ -267,7 +269,7 @@
 }
 .sidebar-close-btn:hover {
   color: var(--text-primary);
-  background: rgba(255,255,255,0.08);
+  background: rgba(var(--overlay-rgb),0.08);
 }
 
 /* ── Sidebar Footer ── */
@@ -438,7 +440,7 @@
   transition: all 0.15s;
 }
 .mini-sidebar-open:hover {
-  background: rgba(255,255,255,0.07);
+  background: rgba(var(--overlay-rgb),0.07);
   color: var(--text-primary);
 }
 
@@ -459,7 +461,7 @@
   font-family: var(--font-mono);
 }
 .mini-level-btn:hover {
-  background: rgba(255,255,255,0.07);
+  background: rgba(var(--overlay-rgb),0.07);
   color: var(--text-primary);
 }
 .mini-level-btn.mini-active {
@@ -554,7 +556,7 @@
   transform: translate(-50%, -50%);
   width: 2px;
   height: 40px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(var(--overlay-rgb),0.15);
   border-radius: 2px;
 }
 /* Vertical: between code textarea and bottom panel */
@@ -571,7 +573,7 @@
   transform: translate(-50%, -50%);
   width: 40px;
   height: 2px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(var(--overlay-rgb),0.15);
   border-radius: 2px;
 }
 
@@ -638,7 +640,7 @@
 }
 
 .test-case-tab.active {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--overlay-rgb), 0.05);
   color: var(--text-primary);
   border-color: var(--text-secondary);
 }
@@ -688,7 +690,7 @@
 
 .io-value {
   font-family: var(--font-mono);
-  background: rgba(255,255,255,0.03);
+  background: rgba(var(--overlay-rgb),0.03);
   padding: 0.75rem;
   border-radius: 6px;
   color: var(--text-primary);
@@ -809,12 +811,12 @@
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--overlay-rgb), 0.05);
   color: var(--text-primary);
 }
 
 .btn-secondary:not(:disabled):hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(var(--overlay-rgb), 0.1);
 }
 
 .btn-primary {
@@ -844,7 +846,7 @@
 }
 .example-title { font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem; }
 .example-line  { font-size: 0.9rem; color: var(--text-secondary); margin: 0.2rem 0; }
-.example-line code { color: var(--text-primary); font-family: var(--font-mono); background: rgba(255,255,255,0.05); padding: 1px 5px; border-radius: 3px; }
+.example-line code { color: var(--text-primary); font-family: var(--font-mono); background: rgba(var(--overlay-rgb),0.05); padding: 1px 5px; border-radius: 3px; }
 
 /* ── Bottom panel (LeetCode-style) ─────────────────────── */
 .editor-panel {
@@ -910,8 +912,8 @@
   cursor: pointer;
   transition: all 0.15s;
 }
-.case-tab:hover { background: rgba(255,255,255,0.03); }
-.case-tab.active { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+.case-tab:hover { background: rgba(var(--overlay-rgb),0.03); }
+.case-tab.active { background: rgba(var(--overlay-rgb),0.1); color: var(--text-primary); }
 
 /* Testcase input fields */
 .tc-fields { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -974,7 +976,7 @@
 .ai-card-top { display: flex; align-items: center; gap: 1rem; }
 .accuracy-ring { position: relative; width: 60px; height: 60px; flex-shrink: 0; }
 .ring-svg { width: 60px; height: 60px; transform: rotate(-90deg); }
-.ring-bg   { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 6; }
+.ring-bg   { fill: none; stroke: rgba(var(--overlay-rgb),0.08); stroke-width: 6; }
 .ring-fill {
   fill: none;
   stroke: var(--accent-color);
@@ -1050,7 +1052,7 @@
   color: var(--text-secondary);
 }
 .lc-detail-box {
-  background: rgba(255,255,255,0.05);
+  background: rgba(var(--overlay-rgb),0.05);
   border-radius: 6px;
   padding: 0.8rem 1rem;
   margin-bottom: 0.2rem;
@@ -1072,7 +1074,7 @@
 /* ── Code Quality Box ───────────────────────────────────────── */
 .code-quality-box {
   margin-top: 1rem;
-  background: rgba(255,255,255,0.02);
+  background: rgba(var(--overlay-rgb),0.02);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 1rem;
@@ -1095,7 +1097,7 @@
   background: rgba(0,0,0,0.2);
   padding: 0.6rem 0.8rem;
   border-radius: 6px;
-  border-left: 3px solid rgba(255,255,255,0.1);
+  border-left: 3px solid rgba(var(--overlay-rgb),0.1);
 }
 .cq-metric {
   display: flex;
@@ -1155,8 +1157,10 @@
   border-radius: 20px;
   padding: 2.5rem;
   width: 100%;
-  max-width: 480px;
+  max-width: 800px;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .onboarding-header {
@@ -1198,8 +1202,14 @@
   justify-content: center;
   min-height: 100vh;
   background-color: var(--bg-main);
+  background-image: url('/white_dragon_2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   padding: 2rem;
   font-family: var(--font-sans);
+  overflow-y: auto;
 }
 
 .auth-card {
@@ -1208,7 +1218,7 @@
   max-width: 440px;
   border-radius: 20px;
   border: 1px solid var(--border-color);
-  padding: 3rem 2.5rem;
+  padding: 2rem 2.5rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
@@ -1216,15 +1226,10 @@
 }
 
 .auth-logo-container {
-  background: var(--accent-color);
-  width: 54px;
-  height: 54px;
-  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 8px 16px var(--accent-glow);
+  margin-bottom: 0.5rem;
 }
 
 .auth-title {
@@ -1240,7 +1245,7 @@
   color: var(--text-secondary);
   font-size: 1rem;
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   line-height: 1.5;
 }
 
@@ -1248,7 +1253,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
 .input-group {
@@ -1365,8 +1370,8 @@
 }
 
 .btn-google:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(var(--overlay-rgb), 0.05);
+  border-color: rgba(var(--overlay-rgb), 0.2);
 }
 
 .auth-footer {
@@ -1396,4 +1401,116 @@
   text-align: center;
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
+}
+
+/* ── Landing Page ─────────────────────────────────────────────────────── */
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  background-image: linear-gradient(to right, rgba(10, 10, 15, 0.95) 0%, rgba(10, 10, 15, 0.6) 50%, rgba(10, 10, 15, 0.2) 100%), url('/white_dragon_2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: var(--font-sans);
+}
+
+.landing-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;
+  z-index: 10;
+}
+
+.landing-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.landing-nav-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.landing-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 4rem;
+  z-index: 10;
+}
+
+.landing-text-box {
+  max-width: 700px;
+}
+
+.landing-slogan-en {
+  font-family: 'Georgia', serif;
+  font-size: 3.5rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #ffffff; /* keep always white to contrast over background */
+  margin-bottom: 1rem;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.landing-slogan-jp {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2.5rem;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.landing-cta {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 1.1rem;
+  padding: 0.8rem 2.5rem;
+  height: auto;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.landing-cta:hover {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.landing-btn-login {
+  background: transparent;
+  color: #ffffff;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.6rem 1.2rem;
+  transition: opacity 0.2s;
+}
+
+.landing-btn-login:hover {
+  opacity: 0.8;
+}
+
+.landing-btn-signup {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.6rem 1.5rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+}
+
+.landing-btn-signup:hover {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.2);
 }

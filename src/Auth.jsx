@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Terminal, Mail, Lock, User, UserPlus, ArrowRight, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Mail, Lock, User, UserPlus, ArrowRight, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { auth, googleProvider, db } from './firebase';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signInWithPopup 
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 
 const ANIME_AVATARS = [
   { id: 'gojo', name: 'Satoru Gojo', url: '/avatars/gojo.png' },
@@ -16,11 +16,17 @@ const ANIME_AVATARS = [
   { id: 'light', name: 'Yagami Light', url: '/avatars/light.png' },
   { id: 'maki', name: 'Maki', url: '/avatars/maki.png' },
   { id: 'choso', name: 'Choso', url: '/avatars/choso.png' },
-  { id: 'yuta', name: 'Yuta', url: '/avatars/yuta.png' }
+  { id: 'yuta', name: 'Yuta', url: '/avatars/yuta.png' },
+  { id: 'dragon_gold', name: 'Gold Dragon', url: '/avatars/gold_dragon.jpeg' },
+  { id: 'dragon_silver', name: 'Silver Dragon', url: '/avatars/silver_dragon.jpeg' },
+  { id: 'dragon_green', name: 'Green Dragon', url: '/avatars/green_dragon.jpeg' },
+  { id: 'dragon_blue', name: 'Blue Dragon', url: '/avatars/blue_dragon.jpeg' },
+  { id: 'dragon_red', name: 'Red Dragon', url: '/avatars/red_dragon.jpeg' },
+  { id: 'dragon_black', name: 'Black Dragon', url: '/avatars/black_dragon.jpeg' }
 ];
 
-export default function Auth({ onLogin }) {
-  const [isLogin, setIsLogin] = useState(true);
+export default function Auth({ onLogin, initialMode = 'login', onBack }) {
+  const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -34,6 +40,38 @@ export default function Auth({ onLogin }) {
   const [googleUser, setGoogleUser] = useState(null);
   const [selectedAvatar, setSelectedAvatar] = useState(ANIME_AVATARS[0].url);
   const [onboardingUsername, setOnboardingUsername] = useState('');
+  const [usernameStatus, setUsernameStatus] = useState('');
+
+  useEffect(() => {
+    if (!showOnboarding) return;
+    
+    const checkUsername = async () => {
+      const trimmed = onboardingUsername.replace(/\s+/g, '').toLowerCase();
+      if (!trimmed) {
+        setUsernameStatus('');
+        return;
+      }
+      
+      setUsernameStatus('checking');
+      try {
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('username', '==', trimmed));
+        const snapshot = await getDocs(q);
+        
+        if (!snapshot.empty) {
+          setUsernameStatus('taken');
+        } else {
+          setUsernameStatus('available');
+        }
+      } catch (err) {
+        console.error('Username check error:', err);
+        setUsernameStatus('');
+      }
+    };
+
+    const timer = setTimeout(checkUsername, 500);
+    return () => clearTimeout(timer);
+  }, [onboardingUsername, showOnboarding]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -123,6 +161,14 @@ export default function Auth({ onLogin }) {
       setError('Please enter a username');
       return;
     }
+    if (usernameStatus === 'checking') {
+      setError('Checking username availability...');
+      return;
+    }
+    if (usernameStatus === 'taken') {
+      setError('Username already taken');
+      return;
+    }
     
     const authUser = {
       uid: googleUser.uid,
@@ -145,6 +191,39 @@ export default function Auth({ onLogin }) {
 
   return (
     <div className="auth-wrapper">
+      {onBack && (
+        <button 
+          onClick={onBack}
+          style={{
+            position: 'fixed',
+            bottom: '2rem',
+            left: '2rem',
+            background: 'rgba(0, 0, 0, 0.6)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            color: '#fff',
+            padding: '0.6rem 1.2rem',
+            borderRadius: '9999px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            cursor: 'pointer',
+            fontSize: '0.95rem',
+            transition: 'all 0.2s',
+            zIndex: 50
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.9)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+          }}
+        >
+          <ArrowLeft size={16} />
+          Go Back
+        </button>
+      )}
       {showOnboarding && (
         <div className="onboarding-overlay">
           <div className="onboarding-modal">
@@ -166,37 +245,71 @@ export default function Auth({ onLogin }) {
                 <input
                   type="text"
                   value={onboardingUsername}
-                  onChange={e => { setOnboardingUsername(e.target.value); setError(''); }}
+                  onChange={e => { setOnboardingUsername(e.target.value); setError(''); setUsernameStatus(''); }}
                   placeholder="e.g. ninja_coder"
                   autoFocus
                 />
+                {usernameStatus === 'checking' && <span style={{fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px'}}>Checking availability...</span>}
+                {usernameStatus === 'available' && <span style={{fontSize: '0.85rem', color: '#10b981', marginTop: '4px'}}>✓ Username available</span>}
+                {usernameStatus === 'taken' && <span style={{fontSize: '0.85rem', color: '#ef4444', marginTop: '4px'}}>✗ Username already taken</span>}
               </div>
 
               <div style={{ marginBottom: '1.2rem' }}>
-                <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: '0.8rem' }}>
-                  Select Your Avatar
-                </label>
-                <div className="avatar-grid">
-                  {ANIME_AVATARS.map(avatar => (
-                    <img
-                      key={avatar.id}
-                      src={avatar.url}
-                      alt={avatar.name}
-                      title={avatar.name}
-                      className={`avatar-option ${selectedAvatar === avatar.url ? 'selected' : ''}`}
-                      onClick={() => setSelectedAvatar(avatar.url)}
-                      style={{
-                        cursor: 'pointer',
-                        border: selectedAvatar === avatar.url
-                          ? '3px solid var(--accent-color)'
-                          : '3px solid transparent',
-                        boxShadow: selectedAvatar === avatar.url
-                          ? '0 0 12px var(--accent-glow)'
-                          : 'none',
-                        transition: 'all 0.2s'
-                      }}
-                    />
-                  ))}
+                <div style={{ display: 'flex', gap: '2rem' }}>
+                  <div style={{ flex: 1, minWidth: '280px', borderRight: '1px solid var(--border-color)', paddingRight: '2rem' }}>
+                    <label style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: '1.2rem', textAlign: 'center' }}>
+                      Anime Characters
+                    </label>
+                    <div className="avatar-grid">
+                      {ANIME_AVATARS.slice(0, 8).map(avatar => (
+                        <img
+                          key={avatar.id}
+                          src={avatar.url}
+                          alt={avatar.name}
+                          title={avatar.name}
+                          className={`avatar-option ${selectedAvatar === avatar.url ? 'selected' : ''}`}
+                          onClick={() => setSelectedAvatar(avatar.url)}
+                          style={{
+                            cursor: 'pointer',
+                            border: selectedAvatar === avatar.url
+                              ? '3px solid var(--accent-color)'
+                              : '3px solid transparent',
+                            boxShadow: selectedAvatar === avatar.url
+                              ? '0 0 12px var(--accent-glow)'
+                              : 'none',
+                            transition: 'all 0.2s'
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ flex: 1, minWidth: '280px' }}>
+                    <label style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: '1.2rem', textAlign: 'center' }}>
+                      Dragons
+                    </label>
+                    <div className="avatar-grid">
+                      {ANIME_AVATARS.slice(8).map(avatar => (
+                        <img
+                          key={avatar.id}
+                          src={avatar.url}
+                          alt={avatar.name}
+                          title={avatar.name}
+                          className={`avatar-option ${selectedAvatar === avatar.url ? 'selected' : ''}`}
+                          onClick={() => setSelectedAvatar(avatar.url)}
+                          style={{
+                            cursor: 'pointer',
+                            border: selectedAvatar === avatar.url
+                              ? '3px solid var(--accent-color)'
+                              : '3px solid transparent',
+                            boxShadow: selectedAvatar === avatar.url
+                              ? '0 0 12px var(--accent-glow)'
+                              : 'none',
+                            transition: 'all 0.2s'
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -211,13 +324,13 @@ export default function Auth({ onLogin }) {
         
         <div className="auth-logo-container">
           <div className="auth-logo-icon">
-            <Terminal size={24} color="var(--bg-main)" />
+            <img src="/favicon.svg" alt="CodeKai Logo" style={{ width: 64, height: 64 }} />
           </div>
         </div>
         
         <h2 className="auth-title">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
         <p className="auth-subtitle">
-          {isLogin ? 'Sign in to securely access your workspace.' : 'Join DSAMaster and level up your coding skills.'}
+          {isLogin ? 'Sign in to securely access your workspace.' : 'Join CodeKai and level up your coding skills.'}
         </p>
 
         {error && <div className="auth-error">{error}</div>}
@@ -323,7 +436,7 @@ export default function Auth({ onLogin }) {
                 } else {
                    // First time user, trigger onboarding!
                    setGoogleUser(user);
-                   setOnboardingUsername((user.displayName || user.email.split('@')[0]).replace(/\s+/g, '').toLowerCase());
+                   setOnboardingUsername('');
                    // Keep the default first anime avatar from our state initialization
                    setShowOnboarding(true);
                 }

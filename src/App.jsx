@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  Terminal, Code2, Play, CheckCircle2, ChevronRight, ChevronDown,
-  PlayCircle, PauseCircle, RotateCcw, Monitor, XCircle, Zap, LogOut, List, Trophy
+  Code2, Play, CheckCircle2, ChevronRight, ChevronDown,
+  PlayCircle, PauseCircle, RotateCcw, Monitor, XCircle, Zap, LogOut, List, Trophy, Sun, Moon
 } from 'lucide-react';
 import { dummyPatterns } from './data';
 import Editor from '@monaco-editor/react';
 import Auth from './Auth';
+import Landing from './Landing';
 import { runCode, analyzeWithGroq } from './api';
 import './App.css';
 
@@ -25,7 +26,13 @@ const ANIME_AVATARS = [
   { id: 'light', name: 'Yagami Light', url: '/avatars/light.png' },
   { id: 'maki', name: 'Maki', url: '/avatars/maki.png' },
   { id: 'choso', name: 'Choso', url: '/avatars/choso.png' },
-  { id: 'yuta', name: 'Yuta', url: '/avatars/yuta.png' }
+  { id: 'yuta', name: 'Yuta', url: '/avatars/yuta.png' },
+  { id: 'dragon_gold', name: 'Gold Dragon', url: '/avatars/gold_dragon.jpeg' },
+  { id: 'dragon_silver', name: 'Silver Dragon', url: '/avatars/silver_dragon.jpeg' },
+  { id: 'dragon_green', name: 'Green Dragon', url: '/avatars/green_dragon.jpeg' },
+  { id: 'dragon_blue', name: 'Blue Dragon', url: '/avatars/blue_dragon.jpeg' },
+  { id: 'dragon_red', name: 'Red Dragon', url: '/avatars/red_dragon.jpeg' },
+  { id: 'dragon_black', name: 'Black Dragon', url: '/avatars/black_dragon.jpeg' }
 ];
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -236,6 +243,17 @@ export default function App() {
   const [isAnalyzing, setIsAnalyzing]       = useState(false);
   const [showSubmissions, setShowSubmissions] = useState(false);
 
+  // Theme State
+  const [theme, setTheme] = useState(() => localStorage.getItem('dsa-theme') || 'dark');
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('dsa-theme', theme);
+  }, [theme]);
+
+  // Auth & Landing State
+  const [showLanding, setShowLanding] = useState(true);
+  const [authMode, setAuthMode] = useState('login');
+  
   // Profile State
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -448,10 +466,23 @@ export default function App() {
   };
 
   if (!isLoggedIn) {
-    return <Auth onLogin={(user) => {
-      setUserProfile(user);
-      setIsLoggedIn(true);
-    }} />;
+    if (showLanding) {
+      return <Landing onNavigate={(mode) => {
+        setAuthMode(mode);
+        setShowLanding(false);
+      }} />;
+    }
+
+    return (
+      <Auth 
+        initialMode={authMode} 
+        onLogin={(user) => {
+          setUserProfile(user);
+          setIsLoggedIn(true);
+        }} 
+        onBack={() => setShowLanding(true)}
+      />
+    );
   }
 
   const currentTestCase = activeQuestion?.testCases?.[activeCase];
@@ -462,11 +493,18 @@ export default function App() {
       {/* Navbar */}
       <nav className="navbar">
         <div className="brand">
-          <Terminal className="brand-icon" size={26} />
-          <span>DSAMaster</span>
+          <img src="/favicon.svg" alt="CodeKai Logo" className="brand-icon" style={{ width: 44, height: 44 }} />
+          <span>CodeKai</span>
         </div>
         
         <div className="navbar-right">
+          <button 
+            className="submissions-nav-btn" 
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            title="Toggle Theme"
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
           {/* Submissions Button */}
           <button
             className="submissions-nav-btn"
@@ -501,25 +539,52 @@ export default function App() {
                 </div>
                 
                 <div className="avatar-selection">
-                  <div className="avatar-title">Choose Avatar</div>
+                  <div className="avatar-title" style={{ textAlign: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Anime Characters</div>
                   <div className="avatar-grid">
-                    {ANIME_AVATARS.map(avatar => (
+                    {ANIME_AVATARS.slice(0, 8).map(avatar => (
                       <img
                         key={avatar.id}
                         src={avatar.url}
                         alt={avatar.name}
                         title={avatar.name}
                         className={`avatar-option ${userProfile.avatar === avatar.url ? 'selected' : ''}`}
-                        onClick={() => {
-                          setUserProfile({...userProfile, avatar: avatar.url});
+                        onClick={async () => {
+                          const newProfile = {...userProfile, avatar: avatar.url};
+                          setUserProfile(newProfile);
                           
-                          // Update localStorage with new avatar
-                          const users = JSON.parse(localStorage.getItem('dsa-users') || '[]');
-                          const userIndex = users.findIndex(u => u.username === userProfile.username);
-                          if (userIndex !== -1) {
-                            users[userIndex].avatar = avatar.url;
-                            localStorage.setItem('dsa-users', JSON.stringify(users));
-                          }
+                          try {
+                            const { doc, setDoc } = await import('firebase/firestore');
+                            const { db } = await import('./firebase');
+                            if (userProfile.uid) {
+                                await setDoc(doc(db, 'users', userProfile.uid), { avatar: avatar.url }, { merge: true });
+                            }
+                          } catch(err) { console.error('Failed to update avatar in DB', err) }
+                        }}
+                        onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatar.name)}&background=random&color=fff&bold=true`; }}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="avatar-title" style={{ textAlign: 'center', margin: '1.5rem 0 1rem 0', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Dragons</div>
+                  <div className="avatar-grid">
+                    {ANIME_AVATARS.slice(8).map(avatar => (
+                      <img
+                        key={avatar.id}
+                        src={avatar.url}
+                        alt={avatar.name}
+                        title={avatar.name}
+                        className={`avatar-option ${userProfile.avatar === avatar.url ? 'selected' : ''}`}
+                        onClick={async () => {
+                          const newProfile = {...userProfile, avatar: avatar.url};
+                          setUserProfile(newProfile);
+                          
+                          try {
+                            const { doc, setDoc } = await import('firebase/firestore');
+                            const { db } = await import('./firebase');
+                            if (userProfile.uid) {
+                                await setDoc(doc(db, 'users', userProfile.uid), { avatar: avatar.url }, { merge: true });
+                            }
+                          } catch(err) { console.error('Failed to update avatar in DB', err) }
                         }}
                         onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatar.name)}&background=random&color=fff&bold=true`; }}
                       />
@@ -739,7 +804,7 @@ export default function App() {
                 <Editor
                   height="100%"
                   language={language}
-                  theme="vs-dark"
+                  theme={theme === 'light' ? 'light' : 'vs-dark'}
                   value={getCode()}
                   onChange={val => setCode(val || '')}
                   options={{
@@ -966,7 +1031,7 @@ export default function App() {
         ) : (
           <div className="empty-state">
             <Code2 size={60} style={{opacity:0.4,marginBottom:'1rem'}}/>
-            <h2>Welcome to DSAMaster</h2>
+            <h2>Welcome to CodeKai</h2>
             <p>Select a level and question from the sidebar to start practising.</p>
           </div>
         )}

@@ -13,6 +13,23 @@
   --error-color: #ff3366;
   --font-sans: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --overlay-rgb: 255, 255, 255;
+  --shadow-rgb: 0, 0, 0;
+}
+
+[data-theme="light"] {
+  --bg-main: #f3f4f6;
+  --bg-panel: #ffffff;
+  --bg-hover: #e5e7eb;
+  --border-color: #d1d5db;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --accent-color: #059669;
+  --accent-glow: rgba(5, 150, 105, 0.2);
+  --button-hover: #047857;
+  --error-color: #dc2626;
+  --overlay-rgb: 0, 0, 0;
+  --shadow-rgb: 0, 0, 0;
 }
 
 * {
@@ -51,11 +68,11 @@ button {
 }
 
 .glass-panel {
-  background: rgba(19, 20, 28, 0.6);
+  background: var(--bg-panel);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(var(--overlay-rgb), 0.05);
+  box-shadow: 0 8px 32px 0 rgba(var(--shadow-rgb), 0.3);
 }
 
 /* Scrollbar */
