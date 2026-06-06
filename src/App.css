@@ -1208,8 +1208,12 @@
   background-repeat: no-repeat;
   background-attachment: fixed;
   padding: 2rem;
-  font-family: var(--font-sans);
+  font-family: var(--font-ninja);
   overflow-y: auto;
+}
+
+.auth-wrapper input, .auth-wrapper button {
+  font-family: inherit;
 }
 
 .auth-card {
@@ -1233,11 +1237,9 @@
 }
 
 .auth-title {
-  font-family: 'Georgia', serif;
   font-size: 2.2rem;
   color: var(--text-primary);
   margin-bottom: 0.5rem;
-  font-weight: 700;
   text-align: center;
 }
 
@@ -1265,7 +1267,6 @@
 
 .input-group label {
   font-size: 0.9rem;
-  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -1298,7 +1299,7 @@
 }
 
 .forgot-password span {
-  color: var(--accent-color);
+  color: #ffffff;
   font-size: 0.9rem;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -1311,12 +1312,11 @@
 .btn-primary-auth {
   width: 100%;
   padding: 1rem;
-  background: var(--accent-color);
-  color: var(--bg-main);
+  background: #ffffff;
+  color: #000000;
   border: none;
   border-radius: 10px;
   font-size: 1.05rem;
-  font-weight: 600;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1324,11 +1324,11 @@
   cursor: pointer;
   margin-top: 1rem;
   transition: all 0.2s;
-  box-shadow: 0 4px 12px var(--accent-glow);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary-auth:hover {
-  background: var(--button-hover);
+  background: #f0f0f0;
   transform: translateY(-1px);
 }
 
@@ -1382,7 +1382,7 @@
 }
 
 .auth-footer span {
-  color: var(--accent-color);
+  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
 }
@@ -1414,7 +1414,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  font-family: var(--font-sans);
+  font-family: var(--font-ninja);
 }
 
 .landing-nav {
@@ -1444,45 +1444,76 @@
   z-index: 10;
 }
 
+.landing-container button {
+  font-family: inherit;
+}
+
 .landing-text-box {
   max-width: 700px;
 }
 
 .landing-slogan-en {
-  font-family: 'Georgia', serif;
+  font-family: var(--font-ninja);
   font-size: 3.5rem;
   line-height: 1.2;
-  font-weight: 700;
   color: #ffffff; /* keep always white to contrast over background */
   margin-bottom: 1rem;
   text-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
 .landing-slogan-jp {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-ninja);
   font-size: 1.2rem;
-  font-weight: 400;
   color: rgba(255, 255, 255, 0.8);
   margin-bottom: 2.5rem;
   letter-spacing: 1px;
   text-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 
-.landing-cta {
-  background: #000000;
+.landing-vertical-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  position: absolute;
+  right: 5rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.vertical-text-jp {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--font-midorima);
+  font-size: 2.5rem;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  letter-spacing: 0.5rem;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.vertical-text-en {
+  writing-mode: vertical-rl;
+  font-family: var(--font-midorima);
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.1rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.landing-cta {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
   font-size: 1.1rem;
   padding: 0.8rem 2.5rem;
   height: auto;
   border-radius: 9999px;
-  font-weight: 600;
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 .landing-cta:hover {
-  background: #1a1a1a;
-  border-color: rgba(255, 255, 255, 0.3);
+  background: #ffffff;
+  color: #000000;
 }
 
 .landing-btn-login {
@@ -1490,7 +1521,6 @@
   color: #ffffff;
   border: none;
   font-size: 1rem;
-  font-weight: 500;
   padding: 0.6rem 1.2rem;
   transition: opacity 0.2s;
 }
@@ -1504,7 +1534,6 @@
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 1rem;
-  font-weight: 500;
   padding: 0.6rem 1.5rem;
   border-radius: 9999px;
   transition: all 0.2s;

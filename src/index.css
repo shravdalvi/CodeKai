@@ -1,5 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
+@font-face {
+  font-family: 'NinjaKage';
+  src: url('/fonts/NinjaKageDemo-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Midorima';
+  src: url('/fonts/Midorima-PersonalUse-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Electroharmonix';
+  src: url('/fonts/Electroharmonix.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Grandover';
+  src: url('/fonts/Grandover.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
   --bg-main: #0a0a0f;
   --bg-panel: #13141c;
@@ -13,6 +41,10 @@
   --error-color: #ff3366;
   --font-sans: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --font-ninja: 'NinjaKage', sans-serif;
+  --font-midorima: 'Midorima', sans-serif;
+  --font-electro: 'Electroharmonix', 'Midorima', sans-serif;
+  --font-grandover: 'Grandover', 'Midorima', sans-serif;
   --overlay-rgb: 255, 255, 255;
   --shadow-rgb: 0, 0, 0;
 }
