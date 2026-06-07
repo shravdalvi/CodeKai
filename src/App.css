@@ -1203,14 +1203,13 @@
   justify-content: center;
   min-height: 100vh;
   background-color: var(--bg-main);
-  background-image: url('/white_dragon_2.jpg');
+  background-image: linear-gradient(to right, rgba(10, 10, 15, 0.95) 0%, rgba(10, 10, 15, 0.6) 50%, rgba(10, 10, 15, 0.2) 100%), url('/white_dragon_2.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
   padding: 2rem;
   font-family: var(--font-ninja);
-  overflow-y: auto;
 }
 
 .auth-wrapper input, .auth-wrapper button {
