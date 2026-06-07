@@ -439,7 +439,17 @@ export default function App() {
 
     // If Submit and all passed, mark as complete
     if (isSubmit && allPassed) {
-      setCompletedQuestions(prev => Array.from(new Set([...prev, activeQuestion.id])));
+      setCompletedQuestions(prev => {
+        if (!prev.includes(activeQuestion.id)) {
+          import('firebase/firestore').then(({ doc, setDoc, increment }) => {
+            import('./firebase').then(({ db }) => {
+              setDoc(doc(db, 'stats', 'global'), { totalSolved: increment(1) }, { merge: true }).catch(console.error);
+            });
+          });
+          return [...prev, activeQuestion.id];
+        }
+        return prev;
+      });
     }
 
     // Run AI analysis on both Run and Submit
@@ -705,9 +715,15 @@ export default function App() {
             <button
               className="sidebar-footer-btn reset-btn"
               onClick={() => {
-                if (window.confirm('Reset all progress? This cannot be undone.')) {
+                if (window.confirm('Reset all progress and clear your code? This cannot be undone.')) {
                   setCompletedQuestions([]);
                   localStorage.removeItem('dsa-completed');
+                  setCodeMap({});
+                  localStorage.removeItem('dsa-code-map');
+                  if (activeQuestion) {
+                    const raw = activeQuestion.starterCode[language] ?? '';
+                    setCodeMap({ [codeKey(activeQuestion.id, language)]: wrapInClassStyle(raw, language) });
+                  }
                 }
               }}
             >
@@ -966,8 +982,14 @@ export default function App() {
                       </div>
                     )}
 
-                    {!testResults && !runOutput && (
+                    {!testResults && !runOutput && !(isRunning || isSubmitting) && (
                       <div className="result-empty">Run or Submit your code to see results here.</div>
+                    )}
+
+                    {(isRunning || isSubmitting) && !isAnalyzing && (
+                      <div className="result-empty" style={{display: 'flex', gap: '0.5rem', alignItems: 'center', justifyContent: 'center'}}>
+                        <RotateCcw size={18} className="spin-animation" /> Running code...
+                      </div>
                     )}
                   </div>
                 )}
@@ -979,6 +1001,12 @@ export default function App() {
                       <div className="ai-card" style={{opacity: 0.7, justifyContent: 'center', alignItems: 'center', minHeight: '100px'}}>
                         <div style={{display:'flex', gap:'0.5rem', alignItems:'center', color:'var(--accent-color)'}}>
                           <Zap size={18} className="spin-animation" /> AI is analyzing your code...
+                        </div>
+                      </div>
+                    ) : (isRunning || isSubmitting) ? (
+                      <div className="ai-card" style={{opacity: 0.7, justifyContent: 'center', alignItems: 'center', minHeight: '100px'}}>
+                        <div style={{display:'flex', gap:'0.5rem', alignItems:'center', color:'var(--accent-color)'}}>
+                          <RotateCcw size={18} className="spin-animation" /> Running code...
                         </div>
                       </div>
                     ) : aiAnalysis ? (
