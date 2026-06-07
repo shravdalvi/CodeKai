@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Lock, User, UserPlus, ArrowRight, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, User, UserPlus, ArrowRight, CheckCircle2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { auth, googleProvider, db } from './firebase';
 import { 
   createUserWithEmailAndPassword, 
@@ -34,6 +34,8 @@ export default function Auth({ onLogin, initialMode = 'login', onBack }) {
     confirmPassword: ''
   });
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Onboarding state for Google Auth
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -294,7 +296,7 @@ export default function Auth({ onLogin, initialMode = 'login', onBack }) {
                           src={avatar.url}
                           alt={avatar.name}
                           title={avatar.name}
-                          className={`avatar-option ${selectedAvatar === avatar.url ? 'selected' : ''}`}
+                          className={`avatar-option dragon-avatar ${selectedAvatar === avatar.url ? 'selected' : ''}`}
                           onClick={() => setSelectedAvatar(avatar.url)}
                           style={{
                             cursor: 'pointer',
@@ -377,25 +379,53 @@ export default function Auth({ onLogin, initialMode = 'login', onBack }) {
 
           <div className="input-group">
             <label>{isLogin ? 'Password' : 'New Password'}</label>
-            <input 
-              type="password" 
-              name="password" 
-              placeholder="" 
-              value={formData.password} 
-              onChange={handleChange} 
-            />
+            <div style={{ position: 'relative' }}>
+              <input 
+                type={showPassword ? "text" : "password"} 
+                name="password" 
+                placeholder="" 
+                value={formData.password} 
+                onChange={handleChange} 
+                style={{ paddingRight: '2.5rem' }}
+              />
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0'
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {!isLogin && (
             <div className="input-group">
               <label>Re-write Password</label>
-              <input 
-                type="password" 
-                name="confirmPassword" 
-                placeholder="" 
-                value={formData.confirmPassword} 
-                onChange={handleChange} 
-              />
+              <div style={{ position: 'relative' }}>
+                <input 
+                  type={showConfirmPassword ? "text" : "password"} 
+                  name="confirmPassword" 
+                  placeholder="" 
+                  value={formData.confirmPassword} 
+                  onChange={handleChange} 
+                  style={{ paddingRight: '2.5rem' }}
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={{
+                    position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0'
+                  }}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
           )}
 

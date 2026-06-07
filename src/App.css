@@ -103,9 +103,11 @@
   height: 38px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: top center;
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .nav-avatar:hover {
@@ -147,7 +149,9 @@
   height: 54px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: top center;
   border: 2px solid var(--accent-color);
+  flex-shrink: 0;
 }
 
 .profile-info {
@@ -201,6 +205,10 @@
   border: 2px solid transparent;
   transition: all 0.2s;
   opacity: 0.7;
+}
+
+.dragon-avatar {
+  object-position: center 25%;
 }
 
 .avatar-option:hover {
@@ -1212,8 +1220,12 @@
   font-family: var(--font-ninja);
 }
 
-.auth-wrapper input, .auth-wrapper button {
-  font-family: inherit;
+.auth-wrapper input {
+  font-family: var(--font-sans);
+}
+
+.auth-wrapper button {
+  font-family: var(--font-ninja);
 }
 
 .auth-card {
@@ -1276,6 +1288,7 @@
   border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 1rem;
+  font-family: var(--font-sans);
   color: var(--text-primary);
   background: var(--bg-main);
   transition: all 0.2s;

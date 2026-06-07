@@ -532,7 +532,7 @@ export default function App() {
             <img 
               src={userProfile.avatar} 
               alt="Profile" 
-              className="nav-avatar" 
+              className={`nav-avatar ${userProfile.avatar?.includes('dragon') ? 'dragon-avatar' : ''}`} 
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=P&background=random&color=fff`; }}
             />
@@ -540,7 +540,7 @@ export default function App() {
             {showProfileMenu && (
               <div className="profile-dropdown">
                 <div className="profile-header">
-                  <img src={userProfile.avatar} alt="Profile" className="profile-header-avatar" onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=P&background=random&color=fff`; }} />
+                  <img src={userProfile.avatar} alt="Profile" className={`profile-header-avatar ${userProfile.avatar?.includes('dragon') ? 'dragon-avatar' : ''}`} onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=P&background=random&color=fff`; }} />
                   <div className="profile-info">
                     <div className="profile-name">{userProfile.name}</div>
                     <div className="profile-username">@{userProfile.username}</div>
@@ -583,7 +583,7 @@ export default function App() {
                         src={avatar.url}
                         alt={avatar.name}
                         title={avatar.name}
-                        className={`avatar-option ${userProfile.avatar === avatar.url ? 'selected' : ''}`}
+                        className={`avatar-option dragon-avatar ${userProfile.avatar === avatar.url ? 'selected' : ''}`}
                         onClick={async () => {
                           const newProfile = {...userProfile, avatar: avatar.url};
                           setUserProfile(newProfile);
