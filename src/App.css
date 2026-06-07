@@ -77,6 +77,7 @@
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
+  font-family: var(--font-ninja);
 }
 
 .submissions-nav-btn:hover {
@@ -1786,4 +1787,195 @@
     gap: 1rem;
     text-align: center;
   }
+}
+
+/* View Containers */
+.view-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.view-header {
+  margin-bottom: 2rem;
+}
+
+.view-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.view-header p {
+  color: var(--text-secondary);
+}
+
+/* Nav Tabs inside Dashboard */
+.nav-tabs {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.nav-tab {
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-family: var(--font-ninja);
+}
+
+.nav-tab:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-tab.active {
+  color: var(--accent-color);
+  background: var(--accent-glow);
+}
+
+[data-theme="light"] .nav-tab:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .nav-tab.active {
+  background: var(--accent-glow);
+  color: var(--button-hover);
+}
+
+/* Heatmap Stats */
+.heatmap-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="light"] .stat-icon {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.heatmap-card {
+  padding: 2rem;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+/* Profile View */
+.profile-card {
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.profile-avatar-wrapper {
+  position: relative;
+}
+
+.profile-large-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--bg-panel);
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+.profile-large-avatar.dragon-avatar {
+  flex-shrink: 0;
+  object-position: top center;
+}
+
+.profile-hero-info h2 {
+  font-size: 2.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.profile-hero-info p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+.profile-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.detail-icon {
+  margin-top: 0.25rem;
+  color: var(--accent-color);
+}
+
+.detail-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.detail-value {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-weight: 500;
 }

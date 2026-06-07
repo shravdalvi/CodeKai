@@ -8,6 +8,11 @@ import Editor from '@monaco-editor/react';
 import Auth from './Auth';
 import Landing from './Landing';
 import { runCode, analyzeWithGroq } from './api';
+import ActivityHeatmap from './ActivityHeatmap';
+import UserProfile from './UserProfile';
+import { auth, db } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, setDoc, increment } from 'firebase/firestore';
 import './App.css';
 
 // ── Piston API (no "runtime" field — causes 401) ──────────────────────────────
@@ -242,6 +247,11 @@ export default function App() {
   const [bottomTab, setBottomTab]           = useState('testcase');
   const [isAnalyzing, setIsAnalyzing]       = useState(false);
   const [showSubmissions, setShowSubmissions] = useState(false);
+  const [currentView, setCurrentView]       = useState(() => localStorage.getItem('dsa-current-view') || 'practice');
+
+  useEffect(() => {
+    localStorage.setItem('dsa-current-view', currentView);
+  }, [currentView]);
 
   // Theme State
   const [theme, setTheme] = useState(() => localStorage.getItem('dsa-theme') || 'dark');
@@ -253,6 +263,7 @@ export default function App() {
   // Auth & Landing State
   const [showLanding, setShowLanding] = useState(true);
   const [authMode, setAuthMode] = useState('login');
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
   // Profile State
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -280,6 +291,41 @@ export default function App() {
     email: 'shrav@example.com',
     avatar: ANIME_AVATARS[0].url
   });
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // user is signed in
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          setUserProfile({
+            uid: user.uid,
+            name: data.name || '',
+            username: data.username || '',
+            email: user.email || '',
+            avatar: data.avatar || ANIME_AVATARS[0].url
+          });
+        } else {
+          setUserProfile({
+            uid: user.uid,
+            email: user.email,
+            avatar: ANIME_AVATARS[0].url
+          });
+        }
+        setIsLoggedIn(true);
+        setShowLanding(false);
+      } else {
+        // user is signed out
+        setIsLoggedIn(false);
+        setShowLanding(true);
+      }
+      setIsCheckingAuth(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Panel sizes
   const [leftWidth, setLeftWidth]       = useState(42); // % of workspace
@@ -439,13 +485,21 @@ export default function App() {
 
     // If Submit and all passed, mark as complete
     if (isSubmit && allPassed) {
+      // Update user's activity map EVERY TIME a successful submit happens
+      if (userProfile?.uid) {
+        const d = new Date();
+        const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        // Use nested object for setDoc with merge to correctly merge into the map
+        setDoc(doc(db, 'users', userProfile.uid), {
+          activityMap: {
+            [todayStr]: increment(1)
+          }
+        }, { merge: true }).catch(console.error);
+      }
+
       setCompletedQuestions(prev => {
         if (!prev.includes(activeQuestion.id)) {
-          import('firebase/firestore').then(({ doc, setDoc, increment }) => {
-            import('./firebase').then(({ db }) => {
-              setDoc(doc(db, 'stats', 'global'), { totalSolved: increment(1) }, { merge: true }).catch(console.error);
-            });
-          });
+          setDoc(doc(db, 'stats', 'global'), { totalSolved: increment(1) }, { merge: true }).catch(console.error);
           return [...prev, activeQuestion.id];
         }
         return prev;
@@ -471,9 +525,18 @@ export default function App() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   const handleLogout = () => {
+    import('firebase/auth').then(({ signOut }) => signOut(auth));
     setIsLoggedIn(false);
     setShowProfileMenu(false);
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--bg-main)', color: 'var(--text-primary)' }}>
+        Loading...
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     if (showLanding) {
@@ -502,9 +565,15 @@ export default function App() {
     <div className="app-container">
       {/* Navbar */}
       <nav className="navbar">
-        <div className="brand">
+        <div className="brand" onClick={() => setCurrentView('practice')} style={{cursor: 'pointer'}}>
           <img src="/favicon.svg" alt="CodeKai Logo" className="brand-icon" style={{ width: 44, height: 44 }} />
           <span>CodeKai</span>
+        </div>
+        
+        <div className="nav-tabs">
+          <span className={`nav-tab ${currentView === 'practice' ? 'active' : ''}`} onClick={() => setCurrentView('practice')}>Practice</span>
+          <span className={`nav-tab ${currentView === 'heatmap' ? 'active' : ''}`} onClick={() => setCurrentView('heatmap')}>Activity</span>
+          <span className={`nav-tab ${currentView === 'profile' ? 'active' : ''}`} onClick={() => setCurrentView('profile')}>Profile</span>
         </div>
         
         <div className="navbar-right">
@@ -523,9 +592,6 @@ export default function App() {
           >
             <Trophy size={16} />
             <span>Submissions</span>
-            {completedQuestions.length > 0 && (
-              <span className="submissions-count">{completedQuestions.length}</span>
-            )}
           </button>
 
           <div className="profile-wrapper" ref={profileRef}>
@@ -668,6 +734,10 @@ export default function App() {
         </div>
       )}
 
+      {currentView === 'heatmap' && <ActivityHeatmap userProfile={userProfile} theme={theme} />}
+      {currentView === 'profile' && <UserProfile userProfile={userProfile} />}
+
+      {currentView === 'practice' && (
       <main className="main-content">
         {/* Sidebar */}
         <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
@@ -1064,6 +1134,7 @@ export default function App() {
           </div>
         )}
       </main>
+      )}
     </div>
   );
 }
