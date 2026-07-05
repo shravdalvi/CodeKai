@@ -88,6 +88,38 @@ Test Users:
 Demo:
 - Video link - https://youtu.be/s5l6AAoT4o0
 - Images
+### Landing Page
+![Landing Page](images/landing%20page.png)
+
+### Login
+![Login](images/login.png)
+
+### Signup
+![Signup](images/signup.png)
+
+### Dashboard
+![Dashboard](images/dashboard.png)
+
+### Submission
+![Submission](images/submission.png)
+
+### Test Cases
+![Test Cases](images/testcases.png)
+
+### Accuracy Analysis
+![Accuracy Analysis](images/accuracy.png)
+
+### Code Quality Analysis (1)
+![Code Quality 1](images/code%20quality-1.png)
+
+### Code Quality Analysis (2)
+![Code Quality 2](images/code%20quality-2.png)
+
+### Contribution Heatmap
+![Contribution Heatmap](images/contribution%20heatmap.png)
+
+### Why CodeKai
+![Why CodeKai](images/why%20codekai.png)
   
 
 ## API Documentation
