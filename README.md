@@ -91,6 +91,9 @@ Demo:
 ### Landing Page
 ![Landing Page](images/landing%20page.png)
 
+### Why CodeKai
+![Why CodeKai](images/why%20codekai.png)
+
 ### Login
 ![Login](images/login.png)
 
@@ -100,14 +103,8 @@ Demo:
 ### Dashboard
 ![Dashboard](images/dashboard.png)
 
-### Submission
-![Submission](images/submission.png)
-
 ### Test Cases
 ![Test Cases](images/testcases.png)
-
-### Accuracy Analysis
-![Accuracy Analysis](images/accuracy.png)
 
 ### Code Quality Analysis (1)
 ![Code Quality 1](images/code%20quality-1.png)
@@ -115,13 +112,16 @@ Demo:
 ### Code Quality Analysis (2)
 ![Code Quality 2](images/code%20quality-2.png)
 
+### Accuracy Analysis
+![Accuracy Analysis](images/accuracy.png)
+
+### Submission
+![Submission](images/submission.png)
+
 ### Contribution Heatmap
 ![Contribution Heatmap](images/contribution%20heatmap.png)
 
-### Why CodeKai
-![Why CodeKai](images/why%20codekai.png)
   
-
 ## API Documentation
 Link: http://localhost:5000/api
 
