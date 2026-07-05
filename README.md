@@ -86,7 +86,7 @@ Test Users:
   - password: test@123
     
 Demo:
-- Video link - #
+- Video link - https://youtu.be/s5l6AAoT4o0
 - Images
   
 
@@ -110,4 +110,4 @@ Additional :
 - Groq API
 
 Demonstration Video
-Video link - #
+Video link - https://youtu.be/s5l6AAoT4o0
