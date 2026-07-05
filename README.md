@@ -1,5 +1,6 @@
 # CodeKai
 ## CodeKai - AI-Powered DSA Learning Platform
+Deployed version - [CodeKai](https://codekai.vercel.app)
 CodeKai is an interactive, AI-powered Data Structures and Algorithms (DSA) learning and execution platform. Designed to help developers refine their coding skills, it features a built-in code editor, multi-language compilation, and advanced AI-driven code analysis using Groq's LLM to provide instantaneous, expert-level feedback on algorithmic approaches and code quality. By automating code evaluation and improving learning efficiency, it empowers developers to focus on building strong problem-solving skills and mastering data structures effectively.
 
 ## Table of Contents
