@@ -353,9 +353,9 @@ export default function Auth({ onLogin, initialMode = 'login', onBack }) {
 
           {isLogin && (
             <div className="input-group">
-              <label>Username or Email</label>
+              <label>Email</label>
               <input 
-                type="text" 
+                type="email" 
                 name="username" 
                 placeholder="" 
                 value={formData.username} 
