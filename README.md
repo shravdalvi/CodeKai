@@ -40,7 +40,7 @@ Architechture Diagram CodeKai Architecture Image
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/CodeKai.git
+https://github.com/shravdalvi/CodeKai.git
 ```
 
 Install dependancies for the frontend:
@@ -81,24 +81,30 @@ npm start
 ## Usage
 Test Users:
 - Normal User
-  - username: user
-  - email: user@example.com
-  - password: password123
-- Admin
-  - username: admin
-  - email: admin@example.com
-  - password: admin123
-
+  - username: test_1
+  - email: test@gmail.com
+  - password: test@123
+    
 Demo:
 - Video link - #
 - Images
-  - img img
+  
 
 ## API Documentation
 Link: http://localhost:5000/api
 
 ## Tech Stack
 JavaScript Node.js Express React Vite HTML5 CSS3 Firebase
+![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
 Additional :
 - Wandbox API
