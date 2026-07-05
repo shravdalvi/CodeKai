@@ -94,7 +94,6 @@ Demo:
 Link: http://localhost:5000/api
 
 ## Tech Stack
-JavaScript Node.js Express React Vite HTML5 CSS3 Firebase
 ![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs)
 ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express)
