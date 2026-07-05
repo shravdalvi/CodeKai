@@ -110,4 +110,4 @@ Additional :
 - Groq API
 
 Demonstration Video
-Video link - https://youtu.be/s5l6AAoT4o0
+link - https://youtu.be/s5l6AAoT4o0
